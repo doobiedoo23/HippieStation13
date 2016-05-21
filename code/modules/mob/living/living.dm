@@ -127,9 +127,9 @@ Sorry Giacom. Please don't be mad :(
 	if(!(M.status_flags & CANPUSH))
 		return 1
 	//anti-riot equipment is also anti-push
-	if(M.r_hand && istype(M.r_hand, /obj/item/weapon/shield/riot))
+	if(M.r_hand && M.r_hand:block_push)
 		return 1
-	if(M.l_hand && istype(M.l_hand, /obj/item/weapon/shield/riot))
+	if(M.l_hand && M.l_hand:block_push)
 		return 1
 
 //Called when we bump onto an obj
@@ -408,7 +408,7 @@ Sorry Giacom. Please don't be mad :(
 	var/t = shooter:zone_sel.selecting
 	if ((t in list( "eyes", "mouth" )))
 		t = "head"
-	var/obj/item/organ/limb/def_zone = ran_zone(t)
+	var/def_zone = ran_zone(t)
 	return def_zone
 
 //damage/heal the mob ears and adjust the deaf amount
@@ -482,6 +482,7 @@ Sorry Giacom. Please don't be mad :(
 	if(stat == DEAD)
 		dead_mob_list -= src
 		living_mob_list += src
+	status_flags &= ~(FAKEDEATH) //So Heal()-ing a changeling doesn't break shit
 	stat = CONSCIOUS
 	if(ishuman(src))
 		var/mob/living/carbon/human/human_mob = src
@@ -759,12 +760,27 @@ Sorry Giacom. Please don't be mad :(
 	if(what.flags & NODROP)
 		src << "<span class='warning'>You can't remove \the [what.name], it appears to be stuck!</span>"
 		return
-	who.visible_message("<span class='danger'>[src] tries to remove [who]'s [what.name].</span>", \
-					"<span class='userdanger'>[src] tries to remove [who]'s [what.name].</span>")
+		
+	var/has_pickpocket = 0
+	var/delay_denominator = 1
+	if(ishuman(usr))
+		var/mob/living/carbon/human/H = usr
+		if(H.gloves && istype(H.gloves,/obj/item/clothing/gloves/pickpocket))
+			has_pickpocket = 1
+			delay_denominator = 3
+	if(has_pickpocket == 0)
+		who.visible_message("<span class='danger'>[src] tries to remove [who]'s [what.name].</span>", \
+						"<span class='userdanger'>[src] tries to remove [who]'s [what.name].</span>")
 	what.add_fingerprint(src)
-	if(do_mob(src, who, what.strip_delay))
+	if(do_mob(src, who, what.strip_delay/delay_denominator))
 		if(what && what == who.get_item_by_slot(where) && Adjacent(who))
 			who.unEquip(what)
+			if(has_pickpocket == 1)
+				var/mob/living/carbon/human/H = usr
+				if(H.hand) //left active hand
+					H.equip_to_slot_if_possible(what, slot_l_hand, 0, 1)
+				else
+					H.equip_to_slot_if_possible(what, slot_r_hand, 0, 1)
 			add_logs(src, who, "stripped", addition="of [what]")
 
 // The src mob is trying to place an item on someone

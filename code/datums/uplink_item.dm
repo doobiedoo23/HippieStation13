@@ -190,6 +190,13 @@ var/list/uplink_items = list()
 	item = /obj/item/weapon/storage/box/syndie_kit/caneshotgun
 	cost = 15
 	jobs = list("Clown","Mime")
+//CLOWN
+/datum/uplink_item/job_specific/honkrender
+	name = "Honk Render"
+	desc = "A blade capable of tearing apart the fabric of reality and summoning several clowns from the Clown Planet itself. They're mostly passive, until someone hits one of them, after which they enter a frenzy, attacking any and all in a collective group effort. The blade itself is also useful as a slashing weapon."
+	item = /obj/item/weapon/veilrender/honkrender
+	cost = 7
+	jobs = list("Clown")
 
 //equipment room access
 
@@ -814,6 +821,12 @@ var/list/uplink_items = list()
 	In addition, they can be forged to display a new assignment and name. This can be done an unlimited amount of times. Some Syndicate areas can only be accessed with these cards."
 	item = /obj/item/weapon/card/id/syndicate
 	cost = 2
+	
+/datum/uplink_item/stealthy_tools/pickpocket_gloves
+	name = "Pickpocket Gloves"
+	desc = "Gloves that allow you to quickly and stealthily remove items from people and puts them straight into your hands."
+	item = /obj/item/clothing/gloves/pickpocket
+	cost = 4
 
 /datum/uplink_item/stealthy_tools/voice_changer
 	name = "Voice Changer"
@@ -1024,7 +1037,7 @@ var/list/uplink_items = list()
 /datum/uplink_item/device_tools/shield
 	name = "Energy Shield"
 	desc = "An incredibly useful personal shield projector, capable of reflecting energy projectiles and defending against other attacks."
-	item = /obj/item/weapon/shield/energy
+	item = /obj/item/weapon/shield/deployable/energy
 	cost = 16
 	gamemodes = list(/datum/game_mode/nuclear,/datum/game_mode/gang)
 	surplus = 20
